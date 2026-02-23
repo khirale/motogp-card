@@ -1,0 +1,145 @@
+# MotoGP Cards — Home Assistant Lovelace Cards
+
+<p align="center">
+  <img src="https://img.shields.io/badge/HACS-Custom-orange?style=for-the-badge" alt="HACS Custom">
+  <img src="https://img.shields.io/badge/HA-2024.1+-blue?style=for-the-badge" alt="HA Version">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
+</p>
+
+> ⚠️ Requires the [MotoGP Tracker](https://github.com/khirale/motogp_tracker) integration.
+
+---
+
+## 🇬🇧 English
+
+### 4 custom cards — zero dependencies
+
+| Card | Description |
+|------|-------------|
+| `custom:motogp-event-card` | Next GP: country flag, circuit SVG, full weekend schedule, live countdown to race start |
+| `custom:motogp-riders-card` | Full riders standings: position, flag, name, team, points, wins |
+| `custom:motogp-teams-card` | Teams standings with proportional progress bars |
+| `custom:motogp-live-card` | Live race classification with animated LIVE banner, lap counter, DNF handling |
+
+### Installation via HACS
+
+1. In HACS → **Frontend** → ⋮ → **Custom repositories**
+2. URL: `https://github.com/khirale/motogp-cards` — Category: **Lovelace**
+3. Click **Download**
+4. **Settings → Dashboards → ⋮ → Resources** → Add:
+   - URL: `/hacsfiles/motogp-cards/motogp-cards.js`
+   - Type: **JavaScript module**
+5. Hard-refresh your browser (Ctrl+Shift+R)
+
+### Manual installation
+
+1. Copy `motogp-cards.js` to `/config/www/motogp-cards.js`
+2. **Settings → Dashboards → ⋮ → Resources** → Add:
+   - URL: `/local/motogp-cards.js`
+   - Type: **JavaScript module**
+3. Hard-refresh your browser (Ctrl+Shift+R)
+
+### Usage
+
+```yaml
+# Auto language (detected from your HA profile)
+- type: custom:motogp-event-card
+- type: custom:motogp-riders-card
+- type: custom:motogp-teams-card
+- type: custom:motogp-live-card
+
+# Language override
+- type: custom:motogp-event-card
+  language: en
+```
+
+### Supported languages
+
+| Code | Language |
+|------|----------|
+| `en` | English (default fallback) |
+| `fr` | Français |
+
+Language is auto-detected from your HA profile. Override per card with `language: xx`.
+
+Want to add your language? Open a PR — translations are a single object at the top of `motogp-cards.js`.
+
+### Features
+
+- ✅ Zero dependencies — no button-card, no card-mod required
+- ✅ Shadow DOM isolation — no CSS leaking between cards
+- ✅ Live countdown updating every second (no page reload)
+- ✅ Live timing: animated LIVE banner, lap counter, DNF highlighted in red
+- ✅ Multilingual with easy extensibility
+- ✅ Responsive — mobile, tablet and desktop
+
+---
+
+## 🇫🇷 Français
+
+### 4 cartes personnalisées — zéro dépendance
+
+| Carte | Description |
+|-------|-------------|
+| `custom:motogp-event-card` | Prochain GP : drapeau, SVG du circuit, programme complet, décompte live |
+| `custom:motogp-riders-card` | Classement pilotes complet : position, drapeau, nom, équipe, points, victoires |
+| `custom:motogp-teams-card` | Classement équipes avec barres de progression proportionnelles |
+| `custom:motogp-live-card` | Classement live avec bandeau EN DIRECT animé, compteur de tours, DNF en rouge |
+
+### Installation via HACS
+
+1. Dans HACS → **Frontend** → ⋮ → **Dépôts personnalisés**
+2. URL : `https://github.com/khirale/motogp-cards` — Catégorie : **Lovelace**
+3. Cliquer **Télécharger**
+4. **Paramètres → Tableaux de bord → ⋮ → Ressources** → Ajouter :
+   - URL : `/hacsfiles/motogp-cards/motogp-cards.js`
+   - Type : **Module JavaScript**
+5. Recharger le navigateur (Ctrl+Shift+R)
+
+### Installation manuelle
+
+1. Copier `motogp-cards.js` dans `/config/www/motogp-cards.js`
+2. **Paramètres → Tableaux de bord → ⋮ → Ressources** → Ajouter :
+   - URL : `/local/motogp-cards.js`
+   - Type : **Module JavaScript**
+3. Recharger le navigateur (Ctrl+Shift+R)
+
+### Utilisation
+
+```yaml
+# Langue automatique (détectée depuis votre profil HA)
+- type: custom:motogp-event-card
+- type: custom:motogp-riders-card
+- type: custom:motogp-teams-card
+- type: custom:motogp-live-card
+
+# Forçage de langue
+- type: custom:motogp-event-card
+  language: fr
+```
+
+### Langues supportées
+
+| Code | Langue |
+|------|--------|
+| `en` | English (fallback par défaut) |
+| `fr` | Français |
+
+La langue est détectée automatiquement depuis votre profil HA. Forcez-la par carte avec `language: xx`.
+
+Vous voulez ajouter votre langue ? Ouvrez une PR — les traductions sont un simple objet en haut de `motogp-cards.js`.
+
+### Fonctionnalités
+
+- ✅ Zéro dépendance — pas de button-card, pas de card-mod requis
+- ✅ Isolation Shadow DOM — aucun conflit CSS entre les cartes
+- ✅ Décompte live mis à jour chaque seconde (sans rechargement)
+- ✅ Live timing : bandeau animé, compteur de tours, DNF en rouge
+- ✅ Multilingue avec extensibilité facile
+- ✅ Responsive — mobile, tablette et desktop
+
+---
+
+## License
+
+MIT © 2026 khirale
