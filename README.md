@@ -66,6 +66,33 @@
   language: en
 ```
 
+### Entity ID override
+
+By default, cards use the entity IDs generated at integration install time. If your instance uses different entity IDs (e.g. after a reinstall or a previous version), you can override them per card:
+
+```yaml
+- type: custom:motogp-event-card
+  entities:
+    event: sensor.motogp_prochain_evenement       # default: sensor.motogp_next_event
+    sessions: sensor.motogp_sessions              # default: sensor.motogp_sessions
+    race_start: sensor.motogp_depart_course       # default: sensor.motogp_next_race_start
+
+- type: custom:motogp-riders-card
+  entities:
+    riders: sensor.motogp_classement_pilotes      # default: sensor.motogp_classement_pilotes
+
+- type: custom:motogp-teams-card
+  entities:
+    teams: sensor.motogp_classement_equipes       # default: sensor.motogp_classement_equipes
+
+- type: custom:motogp-live-card
+  entities:
+    live: sensor.motogp_live_timing               # default: sensor.motogp_live_timing
+    race_start: sensor.motogp_depart_course       # default: sensor.motogp_next_race_start
+```
+
+To find your actual entity IDs: **Developer Tools → States** → search `motogp`.
+
 ### Supported languages
 
 | Code | Language |
@@ -130,6 +157,33 @@ Want to add your language? Open a PR — translations are a single object at the
 - type: custom:motogp-event-card
   language: fr
 ```
+
+### Surcharge des entity IDs
+
+Par défaut, les cartes utilisent les entity IDs générés à l'installation de l'intégration. Si votre instance utilise des entity IDs différents (ex : après une réinstallation ou une version précédente), vous pouvez les surcharger par carte :
+
+```yaml
+- type: custom:motogp-event-card
+  entities:
+    event: sensor.motogp_prochain_evenement       # défaut : sensor.motogp_next_event
+    sessions: sensor.motogp_sessions              # défaut : sensor.motogp_sessions
+    race_start: sensor.motogp_depart_course       # défaut : sensor.motogp_next_race_start
+
+- type: custom:motogp-riders-card
+  entities:
+    riders: sensor.motogp_classement_pilotes      # défaut : sensor.motogp_classement_pilotes
+
+- type: custom:motogp-teams-card
+  entities:
+    teams: sensor.motogp_classement_equipes       # défaut : sensor.motogp_classement_equipes
+
+- type: custom:motogp-live-card
+  entities:
+    live: sensor.motogp_live_timing               # défaut : sensor.motogp_live_timing
+    race_start: sensor.motogp_depart_course       # défaut : sensor.motogp_next_race_start
+```
+
+Pour trouver vos entity IDs réels : **Outils de développement → États** → rechercher `motogp`.
 
 ### Langues supportées
 
