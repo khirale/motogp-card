@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/HACS-Custom-orange?style=for-the-badge" alt="HACS Custom">
-  <img src="https://img.shields.io/badge/HA-2024.1+-blue?style=for-the-badge" alt="HA Version">
+  <img src="https://img.shields.io/badge/HA-2026.1+-blue?style=for-the-badge" alt="HA Version">
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
 </p>
 
