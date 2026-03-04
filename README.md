@@ -22,6 +22,11 @@
   </a>
 </p>
 
+---
+
+<img src="https://github.com/khirale/motogp-card/blob/main/images/motoGP-card.png" width=100%>
+
+---
 
 ## 🇬🇧 English
 
