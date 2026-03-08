@@ -14,11 +14,7 @@
  *   language: en
  */
 
-// ─────────────────────────────────────────────────────────────
-// TRANSLATIONS
-// To add a new language: copy an existing block and translate.
-// Fallback is 'en'.
-// ─────────────────────────────────────────────────────────────
+
 const TRANSLATIONS = {
   en: {
     next_gp:              'Next Grand Prix',
@@ -45,6 +41,20 @@ const TRANSLATIONS = {
     col_laps:             'LAPS',
     col_driver:           'RIDER',
     sensor_missing:       'Sensor not found',
+    profile_loading:      'Loading...',
+    profile_error:        'Unable to load profile',
+    profile_points:       'Points',
+    profile_wins:         'Wins',
+    profile_podiums:      'Podiums',
+    profile_sprint_wins:  'Sprint W',
+    profile_sprint_pod:   'Sprint P',
+    profile_rank:         'Rank',
+    profile_age:          'Age',
+    profile_height:       'Height',
+    profile_weight:       'Weight',
+    profile_from:         'From',
+    profile_cm:           'cm',
+    profile_kg:           'kg',
   },
   fr: {
     next_gp:              'Prochain Grand Prix',
@@ -71,6 +81,20 @@ const TRANSLATIONS = {
     col_laps:             'TOURS',
     col_driver:           'PILOTE',
     sensor_missing:       'Sensor introuvable',
+    profile_loading:      'Chargement...',
+    profile_error:        'Profil indisponible',
+    profile_points:       'Points',
+    profile_wins:         'Victoires',
+    profile_podiums:      'Podiums',
+    profile_sprint_wins:  'Sprint V',
+    profile_sprint_pod:   'Sprint P',
+    profile_rank:         'Classement',
+    profile_age:          'Âge',
+    profile_height:       'Taille',
+    profile_weight:       'Poids',
+    profile_from:         'Ville',
+    profile_cm:           'cm',
+    profile_kg:           'kg',
   },
 };
 
@@ -79,9 +103,6 @@ function getT(lang) {
   return TRANSLATIONS[key] || TRANSLATIONS['en'];
 }
 
-// ─────────────────────────────────────────────────────────────
-// SHARED STYLES
-// ─────────────────────────────────────────────────────────────
 const BASE_CSS = `
   :host { display: block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
   .card { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4); color: #fff; }
@@ -91,9 +112,6 @@ const BASE_CSS = `
   .empty .icon { font-size: 32px; margin-bottom: 8px; }
 `;
 
-// ─────────────────────────────────────────────────────────────
-// CARD 1 — EVENT
-// ─────────────────────────────────────────────────────────────
 class MotoGPEventCard extends HTMLElement {
   constructor() {
     super();
@@ -226,9 +244,6 @@ class MotoGPEventCard extends HTMLElement {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// CARD 2 — RIDERS
-// ─────────────────────────────────────────────────────────────
 class MotoGPRidersCard extends HTMLElement {
   constructor() { super(); this.attachShadow({ mode: 'open' }); }
   setConfig(config) { this._config = config; }
@@ -237,7 +252,12 @@ class MotoGPRidersCard extends HTMLElement {
     const e = (this._config && this._config.entities) || {};
     return { riders: e.riders || 'sensor.motogp_classement_pilotes' };
   }
-  set hass(hass) { this._hass = hass; this._render(); }
+  set hass(hass) {
+    this._hass = hass;
+    const overlay = this.shadowRoot.getElementById('modal-overlay');
+    if (overlay && overlay.classList.contains('open')) return;
+    this._render();
+  }
   getCardSize() { return 8; }
 
   _render() {
@@ -270,11 +290,12 @@ class MotoGPRidersCard extends HTMLElement {
     const rows = riders.map((r, i) => {
       const flag = r.country_iso ? `<img class="rider-flag" src="https://flagcdn.com/20x15/${r.country_iso}.png" alt="">` : '';
       const wins = r.wins > 0 ? '🏆'.repeat(Math.min(r.wins, 3)) : '';
+      const uuid = r.riders_api_uuid || '';
       return `
-        <div class="rider-row" style="background:${i < 3 ? PODIUM_BG[i] : 'transparent'}">
+        <div class="rider-row" style="background:${i < 3 ? PODIUM_BG[i] : 'transparent'}" onclick="this.getRootNode().host._openModal('${uuid}')">
           <span class="r-pos" style="color:${i < 3 ? PODIUM_C[i] : '#667'}">${r.position}</span>
           <span class="r-flag">${flag}</span>
-          <div class="r-info"><div class="r-name">${r.full_name}</div><div class="r-team">${r.team}</div></div>
+          <div class="r-info" style="pointer-events:none"><div class="r-name">${r.full_name}</div><div class="r-team">${r.team}</div></div>
           <span class="r-pts">${r.points}</span>
           <span class="r-wins">${wins}</span>
         </div>`;
@@ -287,7 +308,8 @@ class MotoGPRidersCard extends HTMLElement {
         .ch { font-size: 10px; color: #445; font-weight: 600; }
         .ch.pos, .ch.pts { text-align: right; }
         .ch.wins { text-align: center; }
-        .rider-row { display: grid; grid-template-columns: 28px 24px 1fr 44px 36px; align-items: center; gap: 4px; padding: 7px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .rider-row { display: grid; grid-template-columns: 28px 24px 1fr 44px 36px; align-items: center; gap: 4px; padding: 7px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); cursor: pointer; transition: background 0.15s; }
+        .rider-row:hover { background: rgba(229,0,58,0.12) !important; }
         .rider-row:last-child { border-bottom: none; }
         .r-pos { font-size: 12px; font-weight: 800; text-align: right; }
         .r-flag { text-align: center; }
@@ -301,11 +323,144 @@ class MotoGPRidersCard extends HTMLElement {
       </style>
       <ha-card class="card">${header}${colHeader}${rows}<div class="legend">${t.wins_legend}</div></ha-card>`;
   }
+
+  _openModal(uuid) {
+    this._closeModal();
+    this._currentUuid = uuid;
+    const t = getT(this._lang());
+
+    const overlay = document.createElement('div');
+    overlay.id = 'motogp-modal-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.8);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML = `
+      <style>
+        #motogp-modal { background:#0f1923; border-radius:24px; width:380px; max-width:95vw; box-shadow:0 32px 80px rgba(0,0,0,0.8); overflow:hidden; position:relative; color:#fff; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+        #motogp-modal-close { position:absolute; top:14px; right:14px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.15); color:#fff; width:32px; height:32px; border-radius:50%; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10; transition:background 0.2s; }
+        #motogp-modal-close:hover { background:#e5003a; border-color:#e5003a; }
+        #motogp-modal-body { padding:0; margin:0; }
+        .mh { position:relative; height:200px; overflow:hidden; }
+        .mh-bg { position:absolute; inset:0; background:linear-gradient(135deg,#1a0a1e 0%,#0f1923 100%); }
+        .mh-accent { position:absolute; inset:0; background:linear-gradient(135deg,rgba(229,0,58,0.3) 0%,transparent 60%); }
+        .mh-photo { position:absolute; right:0; bottom:0; height:195px; object-fit:contain; object-position:bottom; filter:drop-shadow(-8px 0 24px rgba(0,0,0,0.6)); }
+        .mh-placeholder { position:absolute; right:20px; bottom:0; font-size:100px; line-height:1; opacity:0.3; }
+        .mh-number { font-size:72px; font-weight:900; color:rgba(229,0,58,0.15); line-height:1; position:absolute; top:10px; left:16px; font-style:italic; }
+        .mh-info { position:absolute; bottom:16px; left:16px; z-index:2; max-width:58%; }
+        .mh-name { font-size:20px; font-weight:900; color:#fff; line-height:1.15; text-shadow:0 2px 8px rgba(0,0,0,0.9); word-break:break-word; }
+        .mh-team { font-size:10px; color:rgba(255,255,255,0.55); margin-top:4px; font-weight:500; line-height:1.3; }
+        .mh-bio { display:flex; align-items:center; gap:6px; margin-top:6px; }
+        .mh-flag { border-radius:2px; box-shadow:0 1px 4px rgba(0,0,0,0.5); }
+        .mh-country { font-size:11px; color:rgba(255,255,255,0.7); font-weight:600; }
+        .ms { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(255,255,255,0.06); }
+        .ms-cell { background:#131e2a; padding:14px 8px; text-align:center; }
+        .ms-cell.green { background:#0d2318; }
+        .ms-val { font-size:24px; font-weight:900; color:#fff; line-height:1; }
+        .ms-val.green { color:#4caf50; }
+        .ms-lbl { font-size:9px; color:#445; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-top:4px; }
+        .ma { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:rgba(255,255,255,0.04); }
+        .ma-cell { background:#0f1923; padding:12px 16px; }
+        .ma-lbl { font-size:9px; color:#334; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+        .ma-val { font-size:15px; font-weight:800; color:#ccd; margin-top:3px; }
+        .m-loading { padding:56px; text-align:center; color:#445; font-size:13px; }
+        .m-error { padding:40px; text-align:center; color:#e5003a; font-size:12px; }
+      </style>
+      <div id="motogp-modal">
+        <button id="motogp-modal-close">✕</button>
+        <div id="motogp-modal-body" class="m-loading">${t.profile_loading}</div>
+      </div>`;
+
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) this._closeModal(); });
+    overlay.querySelector('#motogp-modal-close').addEventListener('click', () => this._closeModal());
+    document.body.appendChild(overlay);
+    this._modalOverlay = overlay;
+
+    if (uuid) {
+      this._fetchProfile(uuid);
+    } else {
+      overlay.querySelector('#motogp-modal-body').innerHTML = `<div class="m-error">${t.profile_error}</div>`;
+    }
+  }
+
+  _closeModal() {
+    if (this._modalOverlay) {
+      this._modalOverlay.remove();
+      this._modalOverlay = null;
+    }
+  }
+
+  async _fetchProfile(uuid) {
+    const t    = getT(this._lang());
+    const body = document.getElementById('motogp-modal-body');
+    if (!body) return;
+    try {
+      const response = await this._hass.callService(
+        'motogp_tracker', 'get_rider_profile',
+        { riders_api_uuid: uuid },
+        {}, false, true
+      );
+      const p = (response && response.response) ? response.response : response;
+      if (!p || p.error) {
+        body.innerHTML = `<div class="m-error">${t.profile_error}${p && p.error ? ' : ' + p.error : ''}</div>`;
+        return;
+      }
+      p.riders_api_uuid = uuid;
+      this._renderProfile(p);
+    } catch (err) {
+      console.error('[MotoGP] fetchProfile error:', err);
+      if (body) body.innerHTML = `<div class="m-error">${t.profile_error}</div>`;
+    }
+  }
+
+  _renderProfile(p) {
+    const t    = getT(this._lang());
+    const body = document.getElementById('motogp-modal-body');
+    if (!body) return;
+
+    if (!p.full_name || !p.team) {
+      const sensor  = this._hass.states[this._eid().riders];
+      const riders  = sensor ? (sensor.attributes.standings || []) : [];
+      const local   = riders.find(r => r.riders_api_uuid === p.riders_api_uuid);
+      if (local) {
+        p.full_name = p.full_name || local.full_name;
+        p.team      = p.team      || local.team;
+      }
+    }
+    const photoEl = p.photo_url
+      ? `<img class="mh-photo" src="${p.photo_url}" alt="">`
+      : `<div class="mh-placeholder">🏍️</div>`;
+    const flagEl = p.country_iso
+      ? `<img class="mh-flag" src="https://flagcdn.com/20x15/${p.country_iso}.png" alt="">` : '';
+    const numberEl = p.number ? `<div class="mh-number">#${p.number}</div>` : '';
+    const stats = [
+      { val: p.points         ?? 0,    lbl: t.profile_points,      green: false },
+      { val: p.race_wins      ?? 0,    lbl: t.profile_wins,        green: true  },
+      { val: p.podiums        ?? 0,    lbl: t.profile_podiums,     green: true  },
+      { val: p.sprint_wins    ?? 0,    lbl: t.profile_sprint_wins, green: false },
+      { val: p.sprint_podiums ?? 0,    lbl: t.profile_sprint_pod,  green: false },
+      { val: `P${p.position  ?? '—'}`, lbl: t.profile_rank,        green: false },
+    ].map(s => `<div class="ms-cell${s.green?' green':''}"><div class="ms-val${s.green?' green':''}">${s.val}</div><div class="ms-lbl">${s.lbl}</div></div>`).join('');
+    const attrs = [
+      p.age        ? { lbl: t.profile_age,    val: `${p.age} ans`                } : null,
+      p.birth_city ? { lbl: t.profile_from,   val: p.birth_city                  } : null,
+      p.height     ? { lbl: t.profile_height, val: `${p.height} ${t.profile_cm}` } : null,
+      p.weight     ? { lbl: t.profile_weight, val: `${p.weight} ${t.profile_kg}` } : null,
+    ].filter(Boolean).map(a => `<div class="ma-cell"><div class="ma-lbl">${a.lbl}</div><div class="ma-val">${a.val}</div></div>`).join('');
+    body.innerHTML = `
+      <div class="mh">
+        <div class="mh-bg"></div>
+        <div class="mh-accent"></div>
+        ${numberEl}
+        ${photoEl}
+        <div class="mh-info">
+          <div class="mh-name">${p.full_name || ''}</div>
+          <div class="mh-team">${p.team || ''}</div>
+          <div class="mh-bio">${flagEl}<span class="mh-country">${p.country_name || ''}</span></div>
+        </div>
+      </div>
+      <div class="ms">${stats}</div>
+      ${attrs ? `<div class="ma">${attrs}</div>` : ''}`;
+  }
 }
 
-// ─────────────────────────────────────────────────────────────
-// CARD 3 — TEAMS
-// ─────────────────────────────────────────────────────────────
 class MotoGPTeamsCard extends HTMLElement {
   constructor() { super(); this.attachShadow({ mode: 'open' }); }
   setConfig(config) { this._config = config; }
@@ -369,9 +524,6 @@ class MotoGPTeamsCard extends HTMLElement {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// CARD 4 — LIVE TIMING
-// ─────────────────────────────────────────────────────────────
 class MotoGPLiveCard extends HTMLElement {
   constructor() { super(); this.attachShadow({ mode: 'open' }); }
   setConfig(config) { this._config = config; }
@@ -495,9 +647,6 @@ class MotoGPLiveCard extends HTMLElement {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// REGISTRATION
-// ─────────────────────────────────────────────────────────────
 customElements.define('motogp-event-card',  MotoGPEventCard);
 customElements.define('motogp-riders-card', MotoGPRidersCard);
 customElements.define('motogp-teams-card',  MotoGPTeamsCard);
