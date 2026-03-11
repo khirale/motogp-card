@@ -78,8 +78,7 @@ By default, cards use the entity IDs generated at integration install time. If y
 ```yaml
 - type: custom:motogp-event-card
   entities:
-    event: sensor.motogp_prochain_evenement       # default: sensor.motogp_next_event
-    sessions: sensor.motogp_sessions              # default: sensor.motogp_sessions
+    event: sensor.motogp_prochain_evenement       # default: sensor.motogp_next_even
     race_start: sensor.motogp_depart_course       # default: sensor.motogp_next_race_start
 
 - type: custom:motogp-riders-card
@@ -171,7 +170,6 @@ Par défaut, les cartes utilisent les entity IDs générés à l'installation de
 - type: custom:motogp-event-card
   entities:
     event: sensor.motogp_prochain_evenement       # défaut : sensor.motogp_next_event
-    sessions: sensor.motogp_sessions              # défaut : sensor.motogp_sessions
     race_start: sensor.motogp_depart_course       # défaut : sensor.motogp_next_race_start
 
 - type: custom:motogp-riders-card
