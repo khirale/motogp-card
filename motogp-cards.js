@@ -388,26 +388,28 @@ class MotoGPRidersCard extends HTMLElement {
   }
 
   async _fetchProfile(uuid) {
-    const t    = getT(this._lang());
-    const body = document.getElementById('motogp-modal-body');
-    if (!body) return;
-    try {
-      const response = await this._hass.callService(
-        'motogp_tracker', 'get_rider_profile',
-        { riders_api_uuid: uuid },
-        {}, false, true
-      );
-      const p = (response && response.response) ? response.response : response;
-      if (!p || p.error) {
-        body.innerHTML = `<div class="m-error">${t.profile_error}${p && p.error ? ' : ' + p.error : ''}</div>`;
-        return;
+      const t    = getT(this._lang());
+      const body = document.getElementById('motogp-modal-body');
+      if (!body) return;
+      try {
+          const response = await this._hass.connection.sendMessagePromise({
+              type: 'call_service',
+              domain: 'motogp_tracker',
+              service: 'get_rider_profile',
+              service_data: { riders_api_uuid: uuid },
+              return_response: true,
+          });
+          const p = (response && response.response) ? response.response : response;
+          if (!p || p.error) {
+              body.innerHTML = `<div class="m-error">${t.profile_error}${p && p.error ? ' : ' + p.error : ''}</div>`;
+              return;
+          }
+          p.riders_api_uuid = uuid;
+          this._renderProfile(p);
+      } catch (err) {
+          console.error('[MotoGP] fetchProfile error:', err);
+          if (body) body.innerHTML = `<div class="m-error">${t.profile_error}</div>`;
       }
-      p.riders_api_uuid = uuid;
-      this._renderProfile(p);
-    } catch (err) {
-      console.error('[MotoGP] fetchProfile error:', err);
-      if (body) body.innerHTML = `<div class="m-error">${t.profile_error}</div>`;
-    }
   }
 
   _renderProfile(p) {
